@@ -170,7 +170,7 @@ namespace nil {
 
                             if (max_exp - min_exp > exp_threshold) {
                                 normalize(state);
-                                continue;
+                                break;
                             }
                             max_exp++; // for safety vs overflow
 
@@ -299,36 +299,35 @@ namespace nil {
                         return ret;
                     }
 
-                    static void mpz_xgcd_partial(mpz_t co2, mpz_t co1, mpz_t r2, mpz_t r1, const mpz_t L) {
-                        mpz_t q, r;
+                    template<typename T>
+                    static void mpz_xgcd_partial(state_type<T> &state) {
                         mp_limb_signed_t aa2, aa1, bb2, bb1, rr1, rr2, qq, bb, t1, t2, t3, i;
                         mp_limb_signed_t bits, bits1, bits2;
 
-                        mpz_inits(q, r, NULL);
+                        mpz_set_si(state.y, 0);
+                        mpz_set_si(state.x, -1);
 
-                        mpz_set_si(co2, 0);
-                        mpz_set_si(co1, -1);
-
-                        while (*r1->_mp_d != 0 && mpz_cmp(r1, L) > 0) {
-                            bits2 = mpz_bits(r2);
-                            bits1 = mpz_bits(r1);
+                        while (*state.bx->_mp_d != 0 && mpz_cmp(state.bx, state.L) > 0) {
+                            bits2 = mpz_bits(state.by);
+                            bits1 = mpz_bits(state.bx);
                             bits = __GMP_MAX(bits2, bits1) - GMP_LIMB_BITS + 1;
                             if (bits < 0) {
                                 bits = 0;
                             }
 
-                            mpz_tdiv_q_2exp(r, r2, bits);
-                            rr2 = mpz_get_ui(r);
-                            mpz_tdiv_q_2exp(r, r1, bits);
-                            rr1 = mpz_get_ui(r);
-                            mpz_tdiv_q_2exp(r, L, bits);
-                            bb = mpz_get_ui(r);
+                            mpz_tdiv_q_2exp(state.r, state.by, bits);
+                            rr2 = mpz_get_ui(state.r);
+                            mpz_tdiv_q_2exp(state.r, state.bx, bits);
+                            rr1 = mpz_get_ui(state.r);
+                            mpz_tdiv_q_2exp(state.r, state.L, bits);
+                            bb = mpz_get_ui(state.r);
 
                             aa2 = 0;
                             aa1 = 1;
                             bb2 = 1;
                             bb1 = 0;
 
+#pragma clang loop unroll(full)
                             for (i = 0; rr1 != 0 && rr1 > bb; i++) {
                                 qq = rr2 / rr1;
 
@@ -355,59 +354,56 @@ namespace nil {
                             }
 
                             if (i == 0) {
-                                mpz_fdiv_qr(q, r2, r2, r1);
-                                mpz_swap(r2, r1);
+                                mpz_fdiv_qr(state.ra, state.by, state.by, state.bx);
+                                mpz_swap(state.by, state.bx);
 
-                                mpz_submul(co2, co1, q);
-                                mpz_swap(co2, co1);
+                                mpz_submul(state.y, state.x, state.ra);
+                                mpz_swap(state.y, state.x);
                             } else {
-                                mpz_mul_si(r, r2, bb2);
+                                mpz_mul_si(state.r, state.by, bb2);
                                 if (aa2 >= 0) {
-                                    mpz_addmul_ui(r, r1, aa2);
+                                    mpz_addmul_ui(state.r, state.bx, aa2);
                                 } else {
-                                    mpz_submul_ui(r, r1, -aa2);
+                                    mpz_submul_ui(state.r, state.bx, -aa2);
                                 }
-                                mpz_mul_si(r1, r1, aa1);
+                                mpz_mul_si(state.bx, state.bx, aa1);
                                 if (bb1 >= 0) {
-                                    mpz_addmul_ui(r1, r2, bb1);
+                                    mpz_addmul_ui(state.bx, state.by, bb1);
                                 } else {
-                                    mpz_submul_ui(r1, r2, -bb1);
+                                    mpz_submul_ui(state.bx, state.by, -bb1);
                                 }
-                                mpz_set(r2, r);
+                                mpz_set(state.by, state.r);
 
-                                mpz_mul_si(r, co2, bb2);
+                                mpz_mul_si(state.r, state.y, bb2);
                                 if (aa2 >= 0) {
-                                    mpz_addmul_ui(r, co1, aa2);
+                                    mpz_addmul_ui(state.r, state.x, aa2);
                                 } else {
-                                    mpz_submul_ui(r, co1, -aa2);
+                                    mpz_submul_ui(state.r, state.x, -aa2);
                                 }
-                                mpz_mul_si(co1, co1, aa1);
+                                mpz_mul_si(state.x, state.x, aa1);
                                 if (bb1 >= 0) {
-                                    mpz_addmul_ui(co1, co2, bb1);
+                                    mpz_addmul_ui(state.x, state.y, bb1);
                                 } else {
-                                    mpz_submul_ui(co1, co2, -bb1);
+                                    mpz_submul_ui(state.x, state.y, -bb1);
                                 }
-                                mpz_set(co2, r);
+                                mpz_set(state.y, state.r);
 
-                                if (mpz_sgn(r1) < 0) {
-                                    mpz_neg(co1, co1);
-                                    mpz_neg(r1, r1);
+                                if (mpz_sgn(state.bx) < 0) {
+                                    mpz_neg(state.x, state.x);
+                                    mpz_neg(state.bx, state.bx);
                                 }
-                                if (mpz_sgn(r2) < 0) {
-                                    mpz_neg(co2, co2);
-                                    mpz_neg(r2, r2);
+                                if (mpz_sgn(state.by) < 0) {
+                                    mpz_neg(state.y, state.y);
+                                    mpz_neg(state.by, state.by);
                                 }
                             }
                         }
 
-                        if (mpz_sgn(r2) < 0) {
-                            mpz_neg(co2, co2);
-                            mpz_neg(co1, co1);
-                            mpz_neg(r2, r2);
+                        if (mpz_sgn(state.by) < 0) {
+                            mpz_neg(state.y, state.y);
+                            mpz_neg(state.x, state.x);
+                            mpz_neg(state.by, state.by);
                         }
-
-                        mpz_clear(q);
-                        mpz_clear(r);
                     }
 
 // https://www.researchgate.net/publication/221451638_Computational_aspects_of_NUCOMP
@@ -440,7 +436,7 @@ namespace nil {
                             return;
                         }
 
-                        mpz_xgcd_partial(state.y, state.x, state.by, state.bx, state.L);
+                        mpz_xgcd_partial(state);
 
                         mpz_neg(state.x, state.x);
                         if (mpz_sgn((state.x)) > 0) {

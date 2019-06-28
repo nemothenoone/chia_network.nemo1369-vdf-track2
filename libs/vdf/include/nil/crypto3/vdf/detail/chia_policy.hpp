@@ -80,7 +80,7 @@ namespace nil {
 
                     constexpr static const int64_t threshold = 1UL << 31;
                     constexpr static const int64_t double_threshold = 1UL << 31;
-                    constexpr static const int64_t exp_threshold = 63;
+                    constexpr static const int64_t exp_threshold = 31;
                     constexpr static const int64_t maxv = ((1UL << 63) - 1);
 
                     template<typename NumberType>
