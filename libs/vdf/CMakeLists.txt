@@ -34,9 +34,10 @@ endif()
 
 option(CRYPTO3_VDF_BOOST "Build Crypto3.VDF with Boost.Multiprecision backend usage" TRUE)
 option(CRYPTO3_VDF_GMP "Build Crypto3.VDF with GMP backend usage" FALSE)
+option(CRYPTO3_VDF_FLINT "Build Crypto3.VDF with FLINT backend usage" FALSE)
 option(CRYPTO3_VDF_MPIR "Build Crypto3.VDF with MPIR backend usage" FALSE)
 
-if(CRYPTO3_VDF_MPIR OR CRYPTO3_VDF_GMP)
+if(CRYPTO3_VDF_MPIR OR CRYPTO3_VDF_GMP OR CRYPTO3_VDF_FLINT)
     if(NOT BUILD_SHARED_LIBS)
         if(UNIX OR APPLE)
             set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ${CMAKE_FIND_LIBRARY_SUFFIXES})
@@ -50,10 +51,10 @@ if(CRYPTO3_VDF_MPIR OR CRYPTO3_VDF_GMP)
         cm_find_package(MPIRXX REQUIRED)
     elseif(CRYPTO3_VDF_GMP)
         cm_find_package(GMPXX REQUIRED)
+    elseif(CRYPTO3_VDF_FLINT)
+        cm_find_package(FLINT REQUIRED)
     endif()
-
-    cm_find_package(FLINT REQUIRED)
-else()
+elseif(CRYPTO3_VDF_BOOST)
     cm_find_package(${CMAKE_WORKSPACE_NAME}_multiprecision REQUIRED)
 endif()
 
@@ -133,11 +134,10 @@ if(CRYPTO3_VDF_GMP)
                                "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
                                ${GMPXX_INCLUDE_DIR}
-                               ${MPFR_INCLUDE_DIR}
-                               ${FLINT_INCLUDE_DIR})
+                               ${MPFR_INCLUDE_DIR})
 
     target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE
-                          ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
+                          ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${MPFR_LIBRARIES})
 
 elseif(CRYPTO3_VDF_MPIR)
     target_compile_definitions(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE CRYPTO3_VDF_MPIR)
@@ -147,11 +147,22 @@ elseif(CRYPTO3_VDF_MPIR)
                                "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
                                ${MPIRXX_INCLUDE_DIR}
+                               ${MPFR_INCLUDE_DIR})
+
+    target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE
+                          ${MPIR_LIBRARIES} ${MPIRXX_LIBRARIES} ${MPFR_LIBRARIES})
+elseif(CRYPTO3_VDF_FLINT)
+    target_compile_definitions(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE CRYPTO3_VDF_FLINT)
+
+    target_include_directories(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE
+                               "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                               "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
+
                                ${MPFR_INCLUDE_DIR}
                                ${FLINT_INCLUDE_DIR})
 
-    target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE
-                          ${MPIR_LIBRARIES} ${MPIRXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
+    target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE ${FLINT_LIBRARIES}
+                          ${MPFR_LIBRARIES})
 elseif(CRYPTO3_VDF_BOOST)
     target_compile_definitions(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE CRYPTO3_VDF_BOOST)
 

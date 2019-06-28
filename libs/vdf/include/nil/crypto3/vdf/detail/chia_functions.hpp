@@ -31,7 +31,7 @@ namespace nil {
                 struct chia_functions : public chia_policy {
                     typedef chia_policy policy_type;
 
-                    template<typename T, typename F> using state_type = policy_type::state_type<T, F>;
+                    template<typename T> using state_type = policy_type::state_type<T>;
 
 #if defined(CRYPTO3_VDF_GMP) || defined(CRYPTO3_VDF_MPIR)
 
@@ -40,8 +40,8 @@ namespace nil {
                      * @tparam IntegerNumberType
                      * @param f
                      */
-                    template<typename T, typename F>
-                    inline static void normalize(state_type<T, F> &state) {
+                    template<typename T>
+                    inline static void normalize(state_type<T> &state) {
                         mpz_neg(state.r, state.form.a);
                         if (mpz_cmp(state.form.b, state.r) > 0 && mpz_cmp(state.form.b, state.form.a) <= 0) {
                             // Already normalized
@@ -92,8 +92,8 @@ namespace nil {
                      * @tparam IntegerNumberType
                      * @param form
                      */
-                    template<typename T, typename F>
-                    inline static void reduce(state_type<T, F> &state) {
+                    template<typename T>
+                    inline static void reduce(state_type<T> &state) {
                         normalize(state);
                         int cmp;
                         while (((cmp = mpz_cmp(state.form.a, state.form.c)) > 0) ||
@@ -136,8 +136,8 @@ namespace nil {
                         normalize(state);
                     }
 
-                    template<typename T, typename F>
-                    inline static void fast_reduce(state_type<T, F> &state) {
+                    template<typename T>
+                    inline static void fast_reduce(state_type<T> &state) {
 
                         int64_t u, v, w, x, u_, v_, w_, x_;
                         int64_t delta, gamma, sgn;
@@ -261,8 +261,7 @@ namespace nil {
                         return mpz_sizeinbase(x, 2);
                     }
 
-                    template<typename I>
-                    inline static void mpz_addmul_si(I r, I x, long u) {
+                    inline static void mpz_addmul_si(mpz_t r, mpz_t x, long u) {
                         if (u >= 0) {
                             mpz_addmul_ui(r, x, u);
                         } else {
@@ -282,8 +281,7 @@ namespace nil {
 
                     // Return an approximation x of the large mpz_t op by an int64_t and the exponent e adjustment.
                     // We must have (x * 2^e) / op = constant approximately.
-                    template<typename I>
-                    inline static int64_t mpz_get_si_2exp(signed long int *exp, const I op) {
+                    inline static int64_t mpz_get_si_2exp(signed long int *exp, const mpz_t op) {
                         uint64_t size = mpz_size(op);
                         uint64_t last = mpz_getlimbn(op, size - 1);
                         uint64_t ret;
@@ -303,18 +301,18 @@ namespace nil {
 
                     static void mpz_xgcd_partial(mpz_t co2, mpz_t co1, mpz_t r2, mpz_t r1, const mpz_t L) {
                         mpz_t q, r;
-                        slong aa2, aa1, bb2, bb1, rr1, rr2, qq, bb, t1, t2, t3, i;
-                        slong bits, bits1, bits2;
+                        mp_limb_signed_t aa2, aa1, bb2, bb1, rr1, rr2, qq, bb, t1, t2, t3, i;
+                        mp_limb_signed_t bits, bits1, bits2;
 
                         mpz_inits(q, r, NULL);
 
                         mpz_set_si(co2, 0);
                         mpz_set_si(co1, -1);
 
-                        while (!(*r1->_mp_d == 0) && mpz_cmp(r1, L) > 0) {
+                        while (*r1->_mp_d != 0 && mpz_cmp(r1, L) > 0) {
                             bits2 = mpz_bits(r2);
                             bits1 = mpz_bits(r1);
-                            bits = FLINT_MAX(bits2, bits1) - FLINT_BITS + 1;
+                            bits = __GMP_MAX(bits2, bits1) - GMP_LIMB_BITS + 1;
                             if (bits < 0) {
                                 bits = 0;
                             }
@@ -413,8 +411,8 @@ namespace nil {
                     }
 
 // https://www.researchgate.net/publication/221451638_Computational_aspects_of_NUCOMP
-                    template<typename T, typename F>
-                    static void nudupl(state_type<T, F> &state) {
+                    template<typename T>
+                    static void nudupl(state_type<T> &state) {
 
                         mpz_gcdext(state.G, state.y, NULL, state.form.b, state.form.a);
 
@@ -474,8 +472,8 @@ namespace nil {
                         mpz_submul(state.form.c, state.ax, state.dx);
                     }
 
-                    template<typename T, typename F>
-                    static inline void discriminant_generator(state_type<T, F> &state, const T &d) {
+                    template<typename T>
+                    static inline void discriminant_generator(state_type<T> &state, const T &d) {
                         T denom;
                         mpz_init(denom);
                         mpz_set_ui(state.form.a, 2);

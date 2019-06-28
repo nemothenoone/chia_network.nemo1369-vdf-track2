@@ -22,10 +22,12 @@
 #ifndef CRYPTO3_CHIA_POLICY_HPP
 #define CRYPTO3_CHIA_POLICY_HPP
 
-#if defined(CRYPTO3_VDF_GMP)
-#define GCDEXT_DC_THRESHOLD 2
+#if defined(CRYPTO3_VDF_FLINT)
 
 #include <flint/fmpz.h>
+
+#elif defined(CRYPTO3_VDF_GMP)
+#define GCDEXT_DC_THRESHOLD 2
 
 #include <gmpxx.h>
 
@@ -33,8 +35,6 @@
 #define GCDEXT_DC_THRESHOLD 2
 
 #include <mpirxx.h>
-
-#include <flint/fmpz.h>
 
 #elif defined(CRYPTO3_VDF_BOOST)
 
@@ -62,6 +62,8 @@ namespace nil {
                     mpz_inits(a, b, c, NULL);
                 }
 
+#elif defined(CRYPTO3_VDF_FLINT)
+
 #endif
 
                 // y = ax^2 + bxy + y^2
@@ -81,10 +83,9 @@ namespace nil {
                     constexpr static const int64_t exp_threshold = 63;
                     constexpr static const int64_t maxv = ((1UL << 63) - 1);
 
-                    template<typename IntegerNumberType, typename FloatNumberType>
+                    template<typename NumberType>
                     struct state_type {
-                        typedef IntegerNumberType number_type;
-                        typedef FloatNumberType float_number_type;
+                        typedef NumberType number_type;
                         typedef binary_quadratic_form<number_type> form_type;
 #if defined(CRYPTO3_VDF_GMP) || defined(CRYPTO3_VDF_MPIR)
 
@@ -93,13 +94,9 @@ namespace nil {
                             mpz_inits(r, ra, s, p, NULL);
                             mpz_inits(G, dx, dy, By, Dy, x, y, t1, t2, bx, by, ax, ay, q, t, Q1, NULL);
                             mpz_inits(faa, fab, fac, fba, fbb, fbc, fca, fcb, fcc, NULL);
-
-                            fmpz_init(fy);
-                            fmpz_init(fx);
-                            fmpz_init(fby);
-                            fmpz_init(fbx);
-                            fmpz_init(fL);
                         }
+
+#elif defined(CRYPTO3_VDF_FLINT)
 
 #else
 
@@ -110,8 +107,6 @@ namespace nil {
                         number_type G, dx, dy, By, Dy, x, y, t1, t2, bx, by, ax, ay, q, t, Q1;
 
                         number_type faa, fab, fac, fba, fbb, fbc, fca, fcb, fcc;
-
-                        float_number_type fy, fx, fby, fbx, fL;
 
                         form_type previous_form, form;
                     };

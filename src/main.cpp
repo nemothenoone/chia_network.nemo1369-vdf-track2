@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     mpz_init(discriminant);
     mpz_set_str(discriminant, argv[1], 0);
 
-    vdf::chia::state_type<mpz_t, fmpz_t> state;
+    vdf::chia::state_type<mpz_t> state;
     vdf::compute<vdf::chia>(discriminant, std::stoi(argv[2]), state);
 
     std::cout << state.form.a << std::endl << state.form.b;

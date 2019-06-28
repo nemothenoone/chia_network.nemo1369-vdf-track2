@@ -33,11 +33,10 @@ namespace nil {
             public:
 #if defined(CRYPTO3_VDF_GMP) || defined(CRYPTO3_VDF_MPIR)
 
-                template<typename T = mpz_t, typename F = fmpz_t> using state_type = typename policy_type::state_type<T,
-                                                                                                                      F>;
+                template<typename T = mpz_t> using state_type = typename policy_type::state_type<T>;
 
-                template<typename T, typename F, typename I>
-                inline static void compute(state_type<T, F> &state, const T &d, I itr) {
+                template<typename T, typename I>
+                inline static void compute(state_type<T> &state, const T &d, I itr) {
                     policy_type::discriminant_generator(state, d);
 
                     mpz_abs(state.L, d);
