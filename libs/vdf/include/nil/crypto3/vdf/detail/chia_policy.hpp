@@ -22,15 +22,21 @@
 #ifndef CRYPTO3_CHIA_POLICY_HPP
 #define CRYPTO3_CHIA_POLICY_HPP
 
-#ifdef CRYPTO3_VDF_NO_BOOST
-
-#define GCDEXT_DC_THRESHOLD 64
+#if defined(CRYPTO3_VDF_GMP)
+#define GCDEXT_DC_THRESHOLD 2
 
 #include <flint/fmpz.h>
 
 #include <gmpxx.h>
 
-#else
+#elif defined(CRYPTO3_VDF_MPIR)
+#define GCDEXT_DC_THRESHOLD 2
+
+#include <mpirxx.h>
+
+#include <flint/fmpz.h>
+
+#elif defined(CRYPTO3_VDF_BOOST)
 
 #include <boost/multiprecision/number.hpp>
 
@@ -39,7 +45,7 @@
 namespace nil {
     namespace crypto3 {
         namespace vdf {
-#ifndef CRYPTO3_VDF_NO_BOOST
+#ifdef CRYPTO3_VDF_BOOST
             using namespace boost::multiprecision;
 #endif
 
@@ -50,7 +56,7 @@ namespace nil {
             template<typename NumberType>
             struct binary_quadratic_form {
                 typedef NumberType number_type;
-#ifdef CRYPTO3_VDF_NO_BOOST
+#if defined(CRYPTO3_VDF_GMP) || defined(CRYPTO3_VDF_MPIR)
 
                 binary_quadratic_form() {
                     mpz_inits(a, b, c, NULL);
@@ -80,7 +86,7 @@ namespace nil {
                         typedef IntegerNumberType number_type;
                         typedef FloatNumberType float_number_type;
                         typedef binary_quadratic_form<number_type> form_type;
-#ifdef CRYPTO3_VDF_NO_BOOST
+#if defined(CRYPTO3_VDF_GMP) || defined(CRYPTO3_VDF_MPIR)
 
                         state_type() {
                             mpz_inits(D, L, NULL);

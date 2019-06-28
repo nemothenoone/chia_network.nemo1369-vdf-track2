@@ -29,9 +29,17 @@ cm_find_package(CM)
 
 add_subdirectory(libs/vdf)
 
-if(NOT GMP_FOUND OR NOT GMPXX_FOUND OR NOT FLINT_FOUND)
-    cm_find_package(GMP REQUIRED)
-    cm_find_package(GMPXX REQUIRED)
+if((NOT GMP_FOUND) OR (NOT GMPXX_FOUND) OR (NOT FLINT_FOUND) OR (NOT MPFR_FOUND))
+    if(NOT BUILD_SHARED_LIBS)
+        if(UNIX OR APPLE)
+            set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ${CMAKE_FIND_LIBRARY_SUFFIXES})
+        elseif(WIN32)
+            set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ${CMAKE_FIND_LIBRARY_SUFFIXES})
+        endif()
+        cm_find_package(MPFR REQUIRED)
+    endif()
+
+    cm_find_package(MPIRXX REQUIRED)
     cm_find_package(FLINT REQUIRED)
 endif()
 
@@ -65,9 +73,9 @@ target_include_directories(${CURRENT_PROJECT_NAME} PRIVATE
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
-                           ${GMP_INCLUDE_DIR}
-                           ${GMPXX_INCLUDE_DIR}
+                           ${MPIRXX_INCLUDE_DIR}
+                           ${MPFR_INCLUDE_DIR}
                            ${FLINT_INCLUDE_DIR})
 
 target_link_libraries(${CURRENT_PROJECT_NAME} PUBLIC crypto3::vdf
-                      ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${FLINT_LIBRARIES})
+                      ${MPIRXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})

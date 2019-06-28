@@ -33,7 +33,7 @@ namespace nil {
 
                     template<typename T, typename F> using state_type = policy_type::state_type<T, F>;
 
-#ifdef CRYPTO3_VDF_NO_BOOST
+#if defined(CRYPTO3_VDF_GMP) || defined(CRYPTO3_VDF_MPIR)
 
                     /*!
                      * @brief

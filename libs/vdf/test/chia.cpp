@@ -103,7 +103,7 @@ const static std::unordered_map<std::pair<std::string, std::size_t>,
 BOOST_AUTO_TEST_SUITE(chia_vdf_test_suite)
 
     BOOST_DATA_TEST_CASE(chia_vdf_test, boost::unit_test::data::make(valid_data), array_element) {
-#ifdef CRYPTO3_VDF_NO_BOOST
+#ifndef CRYPTO3_VDF_BOOST
         mpz_t D, a, b;
         mpz_inits(D, a, b, NULL);
         mpz_set_str(D, array_element.first.first.c_str(), 0);

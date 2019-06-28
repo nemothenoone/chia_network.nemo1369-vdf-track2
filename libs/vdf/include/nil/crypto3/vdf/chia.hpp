@@ -31,7 +31,7 @@ namespace nil {
                 typedef detail::chia_functions policy_type;
 
             public:
-#ifdef CRYPTO3_VDF_NO_BOOST
+#if defined(CRYPTO3_VDF_GMP) || defined(CRYPTO3_VDF_MPIR)
 
                 template<typename T = mpz_t, typename F = fmpz_t> using state_type = typename policy_type::state_type<T,
                                                                                                                       F>;
@@ -49,7 +49,7 @@ namespace nil {
                     }
                 }
 
-#else
+#elif defined(CRYPTO3_VDF_BOOST)
 
                 template<typename T, typename F> using state_type = typename policy_type::state_type<T, F>;
 

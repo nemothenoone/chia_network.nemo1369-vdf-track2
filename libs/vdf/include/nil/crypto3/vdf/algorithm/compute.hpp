@@ -40,7 +40,7 @@ namespace nil {
 
             }
 
-#ifdef CRYPTO3_VDF_NO_BOOST
+#ifndef CRYPTO3_VDF_BOOST
 
             template<typename Vdf, typename NumberType, typename Integer>
             void compute(const NumberType &challenge, Integer difficulty, typename Vdf::template state_type<> &out) {
@@ -49,12 +49,15 @@ namespace nil {
 
 #else
 
-            template<typename Vdf, typename Backend1, expression_template_option ExpressionTemplates1,
-                    typename Backend2, expression_template_option ExpressionTemplates2, typename Integer>
-            void compute(const number<Backend1, ExpressionTemplates1> &challenge, Integer difficulty,
-                    number<Backend2, ExpressionTemplates2> &out) {
+            template<typename Vdf,
+                     typename Backend1, expression_template_option ExpressionTemplates1,
+                     typename Backend2, expression_template_option ExpressionTemplates2,
+                     typename Integer>
+            void compute(const number <Backend1, ExpressionTemplates1> &challenge, Integer difficulty,
+                         number <Backend2, ExpressionTemplates2> &out) {
                 Vdf::compute(challenge, difficulty, out);
             }
+
 #endif
         }
     }
