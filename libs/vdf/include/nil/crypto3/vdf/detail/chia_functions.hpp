@@ -301,6 +301,117 @@ namespace nil {
                         return ret;
                     }
 
+                    static void mpz_xgcd_partial(mpz_t co2, mpz_t co1, mpz_t r2, mpz_t r1, const mpz_t L) {
+                        mpz_t q, r;
+                        slong aa2, aa1, bb2, bb1, rr1, rr2, qq, bb, t1, t2, t3, i;
+                        slong bits, bits1, bits2;
+
+                        mpz_inits(q, r, NULL);
+
+                        mpz_set_si(co2, 0);
+                        mpz_set_si(co1, -1);
+
+                        while (!(*r1->_mp_d == 0) && mpz_cmp(r1, L) > 0) {
+                            bits2 = mpz_bits(r2);
+                            bits1 = mpz_bits(r1);
+                            bits = FLINT_MAX(bits2, bits1) - FLINT_BITS + 1;
+                            if (bits < 0) {
+                                bits = 0;
+                            }
+
+                            mpz_tdiv_q_2exp(r, r2, bits);
+                            rr2 = mpz_get_ui(r);
+                            mpz_tdiv_q_2exp(r, r1, bits);
+                            rr1 = mpz_get_ui(r);
+                            mpz_tdiv_q_2exp(r, L, bits);
+                            bb = mpz_get_ui(r);
+
+                            aa2 = 0;
+                            aa1 = 1;
+                            bb2 = 1;
+                            bb1 = 0;
+
+                            for (i = 0; rr1 != 0 && rr1 > bb; i++) {
+                                qq = rr2 / rr1;
+
+                                t1 = rr2 - qq * rr1;
+                                t2 = aa2 - qq * aa1;
+                                t3 = bb2 - qq * bb1;
+
+                                if (i & 1) {
+                                    if (t1 < -t3 || rr1 - t1 < t2 - aa1) {
+                                        break;
+                                    }
+                                } else {
+                                    if (t1 < -t2 || rr1 - t1 < t3 - bb1) {
+                                        break;
+                                    }
+                                }
+
+                                rr2 = rr1;
+                                rr1 = t1;
+                                aa2 = aa1;
+                                aa1 = t2;
+                                bb2 = bb1;
+                                bb1 = t3;
+                            }
+
+                            if (i == 0) {
+                                mpz_fdiv_qr(q, r2, r2, r1);
+                                mpz_swap(r2, r1);
+
+                                mpz_submul(co2, co1, q);
+                                mpz_swap(co2, co1);
+                            } else {
+                                mpz_mul_si(r, r2, bb2);
+                                if (aa2 >= 0) {
+                                    mpz_addmul_ui(r, r1, aa2);
+                                } else {
+                                    mpz_submul_ui(r, r1, -aa2);
+                                }
+                                mpz_mul_si(r1, r1, aa1);
+                                if (bb1 >= 0) {
+                                    mpz_addmul_ui(r1, r2, bb1);
+                                } else {
+                                    mpz_submul_ui(r1, r2, -bb1);
+                                }
+                                mpz_set(r2, r);
+
+                                mpz_mul_si(r, co2, bb2);
+                                if (aa2 >= 0) {
+                                    mpz_addmul_ui(r, co1, aa2);
+                                } else {
+                                    mpz_submul_ui(r, co1, -aa2);
+                                }
+                                mpz_mul_si(co1, co1, aa1);
+                                if (bb1 >= 0) {
+                                    mpz_addmul_ui(co1, co2, bb1);
+                                } else {
+                                    mpz_submul_ui(co1, co2, -bb1);
+                                }
+                                mpz_set(co2, r);
+
+                                if (mpz_sgn(r1) < 0) {
+                                    mpz_neg(co1, co1);
+                                    mpz_neg(r1, r1);
+                                }
+                                if (mpz_sgn(r2) < 0) {
+                                    mpz_neg(co2, co2);
+                                    mpz_neg(r2, r2);
+                                }
+                            }
+                        }
+
+                        if (mpz_sgn(r2) < 0) {
+                            mpz_neg(co2, co2);
+                            mpz_neg(co1, co1);
+                            mpz_neg(r2, r2);
+                        }
+
+                        mpz_clear(q);
+                        mpz_clear(r);
+                    }
+
 // https://www.researchgate.net/publication/221451638_Computational_aspects_of_NUCOMP
                     template<typename T, typename F>
                     static void nudupl(state_type<T, F> &state) {
@@ -331,20 +442,7 @@ namespace nil {
                             return;
                         }
 
-                        fmpz_set_mpz(state.fy, state.y);
-                        fmpz_set_mpz(state.fx, state.x);
-                        fmpz_set_mpz(state.fby, state.by);
-                        fmpz_set_mpz(state.fbx, state.bx);
-                        fmpz_set_mpz(state.fL, state.L);
-
-                        fmpz_xgcd_partial(state.fy, state.fx, state.fby, state.fbx, state.fL);
-
-                        fmpz_get_mpz(state.y, state.fy);
-                        fmpz_get_mpz(state.x, state.fx);
-                        fmpz_get_mpz(state.by, state.fby);
-                        fmpz_get_mpz(state.bx, state.fbx);
-                        fmpz_get_mpz(state.L, state.fL);
-
+                        mpz_xgcd_partial(state.y, state.x, state.by, state.bx, state.L);
 
                         //gmp_xgcd_partial(y, x, by, bx, L);
 
