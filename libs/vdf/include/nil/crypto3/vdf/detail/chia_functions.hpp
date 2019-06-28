@@ -442,8 +442,6 @@ namespace nil {
 
                         mpz_xgcd_partial(state.y, state.x, state.by, state.bx, state.L);
 
-                        //gmp_xgcd_partial(y, x, by, bx, L);
-
                         mpz_neg(state.x, state.x);
                         if (mpz_sgn((state.x)) > 0) {
                             mpz_neg(state.y, state.y);
@@ -478,6 +476,7 @@ namespace nil {
                         mpz_init(denom);
                         mpz_set_ui(state.form.a, 2);
                         mpz_set_ui(state.form.b, 1);
+                        mpz_set_ui(state.form.b, 1);
                         mpz_mul(state.form.c, state.form.b, state.form.b);
                         mpz_sub(state.form.c, state.form.c, d);
                         mpz_mul_ui(denom, state.form.a, 4);
@@ -486,7 +485,359 @@ namespace nil {
                         mpz_clear(denom);
                     }
 
-#else
+#elif defined(CRYPTO3_VDF_FLINT)
+
+                    /*!
+                     * @brief
+                     * @tparam IntegerNumberType
+                     * @param f
+                     */
+                    template<typename T>
+                    inline static void normalize(state_type<T> &state) {
+                        fmpz_neg(state.r, state.form.a);
+                        if (fmpz_cmp(state.form.b, state.r) > 0 && fmpz_cmp(state.form.b, state.form.a) <= 0) {
+                            // Already normalized
+                            return;
+                        }
+                        fmpz_sub(state.r, state.form.a, state.form.b);
+                        fmpz_mul_2exp(state.ra, state.form.a, 1);
+                        fmpz_fdiv_q(state.r, state.r, state.ra);
+                        fmpz_mul(state.ra, state.r, state.form.a);
+                        fmpz_addmul(state.form.c, state.ra, state.r);
+                        fmpz_addmul(state.form.c, state.r, state.form.b);
+                        fmpz_mul_2exp(state.ra, state.ra, 1);
+                        fmpz_add(state.form.b, state.form.b, state.ra);
+                    }
+
+                    /*!
+                     * @brief Test if f is reduced. If it almost is but a, c are
+                     * swapped, then just swap them to make it reduced.
+                     * @tparam T
+                     * @param f
+                     * @return
+                     */
+                    template<typename T>
+                    inline static bool test_reduction(binary_quadratic_form<T> &f) {
+                        int a_b = fmpz_cmpabs(f.a, f.b);
+                        int c_b = fmpz_cmpabs(f.c, f.b);
+
+                        if (a_b < 0 || c_b < 0) {
+                            return false;
+                        }
+
+                        int a_c = fmpz_cmp(f.a, f.c);
+
+                        if (a_c > 0) {
+                            fmpz_swap(f.a, f.c);
+                            fmpz_neg(f.b, f.b);
+                        }
+
+                        if (a_c == 0 && fmpz_sgn(f.b) < 0) {
+                            fmpz_neg(f.b, f.b);
+                        }
+
+                        return true;
+                    }
+
+                    /*!
+                     * @brief
+                     * @tparam IntegerNumberType
+                     * @param form
+                     */
+                    template<typename T>
+                    inline static void reduce(state_type<T> &state) {
+                        normalize(state);
+                        int cmp;
+                        while (((cmp = fmpz_cmp(state.form.a, state.form.c)) > 0) ||
+                               (cmp == 0 && fmpz_sgn(state.form.b) < 0)) {
+                            fmpz_add(state.s, state.form.c, state.form.b);
+
+                            // x = 2c
+                            fmpz_mul_2exp(state.p, state.form.c, 1);
+                            fmpz_fdiv_q(state.s, state.s, state.p);
+
+                            fmpz_set(state.previous_form.a, state.form.a);
+                            fmpz_set(state.previous_form.b, state.form.b);
+
+                            // b = -b
+                            fmpz_set(state.form.a, state.form.c);
+                            fmpz_neg(state.form.b, state.form.b);
+
+                            // x = 2sc
+                            fmpz_mul(state.p, state.s, state.form.c);
+                            fmpz_mul_2exp(state.p, state.p, 1);
+
+                            // b += 2sc
+                            fmpz_add(state.form.b, state.form.b, state.p);
+
+                            // x = bs
+                            fmpz_mul(state.p, state.previous_form.b, state.s);
+
+                            // s = s^2
+                            fmpz_mul(state.s, state.s, state.s);
+
+                            // c = cs
+                            fmpz_mul(state.form.c, state.form.c, state.s);
+
+                            // c -= cx
+                            fmpz_sub(state.form.c, state.form.c, state.p);
+
+                            // c += a
+                            fmpz_add(state.form.c, state.form.c, state.previous_form.a);
+                        }
+                        normalize(state);
+                    }
+
+                    template<typename T>
+                    inline static void fast_reduce(state_type<T> &state) {
+
+                        int64_t u, v, w, x, u_, v_, w_, x_;
+                        int64_t delta, gamma, sgn;
+                        int64_t a, b, c, a_, b_, c_;
+                        int64_t aa, ab, ac, ba, bb, bc, ca, cb, cc;
+                        signed long int a_exp, b_exp, c_exp, max_exp, min_exp;
+
+                        while (!test_reduction(state.form)) {
+
+                            a = fmpz_get_si_2exp(&a_exp, state.form.a);
+                            b = fmpz_get_si_2exp(&b_exp, state.form.b);
+                            c = fmpz_get_si_2exp(&c_exp, state.form.c);
+
+                            max_exp = a_exp;
+                            min_exp = a_exp;
+
+                            if (max_exp < b_exp) {
+                                max_exp = b_exp;
+                            }
+                            if (min_exp > b_exp) {
+                                min_exp = b_exp;
+                            }
+
+                            if (max_exp < c_exp) {
+                                max_exp = c_exp;
+                            }
+                            if (min_exp > c_exp) {
+                                min_exp = c_exp;
+                            }
+
+                            if (max_exp - min_exp > exp_threshold) {
+                                normalize(state);
+                                continue;
+                            }
+                            max_exp++; // for safety vs overflow
+
+                            // Ensure a, b, c are shifted so that a : b : c ratios are same as
+                            // state.form.a : state.form.b : state.form.c
+                            // a, b, c will be used as approximations to state.form.a, state.form.b, state.form.c
+                            a >>= (max_exp - a_exp);
+                            b >>= (max_exp - b_exp);
+                            c >>= (max_exp - c_exp);
+
+                            u_ = 1;
+                            v_ = 0;
+                            w_ = 0;
+                            x_ = 1;
+
+                            // We must be very careful about overflow in the following steps
+                            do {
+                                u = u_;
+                                v = v_;
+                                w = w_;
+                                x = x_;
+                                // Ensure that delta = floor ((b+c) / 2c)
+                                delta = b >= 0 ? (b + c) / (c << 1) : -(-b + c) / (c << 1);
+                                a_ = c;
+                                c_ = c * delta;
+                                b_ = -b + (c_ << 1);
+                                gamma = b - c_;
+                                c_ = a - delta * gamma;
+
+                                a = a_;
+                                b = b_;
+                                c = c_;
+
+                                u_ = v;
+                                v_ = -u + delta * v;
+                                w_ = x;
+                                x_ = -w + delta * x;
+                                // The condition (abs(v_) | abs(x_)) <= THRESH protects against overflow
+                            } while ((abs(v_) | abs(x_)) <= threshold && a > c && c > 0);
+
+                            if ((abs(v_) | abs(x_)) <= threshold) {
+                                u = u_;
+                                v = v_;
+                                w = w_;
+                                x = x_;
+                            }
+
+                            aa = u * u;
+                            ab = u * w;
+                            ac = w * w;
+                            ba = u * v << 1;
+                            bb = u * x + v * w;
+                            bc = w * x << 1;
+                            ca = v * v;
+                            cb = v * x;
+                            cc = x * x;
+
+                            // The following operations take 40% of the overall runtime.
+
+                            fmpz_mul_si(state.faa, state.form.a, aa);
+                            fmpz_mul_si(state.fab, state.form.b, ab);
+                            fmpz_mul_si(state.fac, state.form.c, ac);
+
+                            fmpz_mul_si(state.fba, state.form.a, ba);
+                            fmpz_mul_si(state.fbb, state.form.b, bb);
+                            fmpz_mul_si(state.fbc, state.form.c, bc);
+
+                            fmpz_mul_si(state.fca, state.form.a, ca);
+                            fmpz_mul_si(state.fcb, state.form.b, cb);
+                            fmpz_mul_si(state.fcc, state.form.c, cc);
+
+                            fmpz_add(state.form.a, state.faa, state.fab);
+                            fmpz_add(state.form.a, state.form.a, state.fac);
+
+                            fmpz_add(state.form.b, state.fba, state.fbb);
+                            fmpz_add(state.form.b, state.form.b, state.fbc);
+
+                            fmpz_add(state.form.c, state.fca, state.fcb);
+                            fmpz_add(state.form.c, state.form.c, state.fcc);
+                        }
+                    }
+
+                    template<typename I>
+                    inline static long fmpz_bits(I x) {
+                        if (x->_mp_size == 0) {
+                            return 0;
+                        }
+                        return fmpz_sizeinbase(x, 2);
+                    }
+
+                    inline static void fmpz_addmul_si(fmpz_t r, fmpz_t x, long u) {
+                        if (u >= 0) {
+                            fmpz_addmul_ui(r, x, u);
+                        } else {
+                            fmpz_submul_ui(r, x, -u);
+                        }
+                    }
+
+                    inline static uint64_t signed_shift(uint64_t op, int shift) {
+                        if (shift > 0) {
+                            return op << shift;
+                        }
+                        if (shift <= -64) {
+                            return 0;
+                        }
+                        return op >> (-shift);
+                    }
+
+                    // Return an approximation x of the large fmpz_t op by an int64_t and the exponent e adjustment.
+                    // We must have (x * 2^e) / op = constant approximately.
+                    inline static int64_t fmpz_get_si_2exp(signed long int *exp, const fmpz_t op) {
+                        uint64_t size = fmpz_size(op);
+                        uint64_t last = op[size - 1];
+                        uint64_t ret;
+                        int lg2 = LOG2(last) + 1;
+                        *exp = lg2;
+                        ret = signed_shift(last, 63 - *exp);
+                        if (size > 1) {
+                            *exp += (size - 1) * 64;
+                            uint64_t prev = op[size - 2];
+                            ret += signed_shift(prev, -1 - lg2);
+                        }
+                        if (fmpz_sgn(op) < 0) {
+                            return -((int64_t) ret);
+                        }
+                        return ret;
+                    }
+
+                    /* Find such g, x that a*x == g (mod n). Optimize for g == 1, so that x =
+ * a^(-1) (mod n) . */
+                    void fast_gcdinv(fmpz_t g, fmpz_t x, const fmpz_t a, const fmpz_t n) {
+                        int ret = fmpz_invmod(x, a, n);
+                        if (ret) {
+                            fmpz_one(g);
+                            return;
+                        }
+
+                        fmpz_gcdinv(g, x, a, n);
+                    }
+
+// https://www.researchgate.net/publication/221451638_Computational_aspects_of_NUCOMP
+                    template<typename T>
+                    static void nudupl(state_type<T> &state) {
+
+                        fmpz_gcdext(state.G, state.y, NULL, state.form.b, state.form.a);
+
+                        fmpz_divexact(state.By, state.form.a, state.G);
+                        fmpz_divexact(state.Dy, state.form.b, state.G);
+
+                        fmpz_mul(state.bx, state.y, state.form.c);
+                        fmpz_mod(state.bx, state.bx, state.By);
+
+                        fmpz_set(state.by, state.By);
+
+                        if (fmpz_cmpabs(state.by, state.L) <= 0) {
+                            fmpz_mul(state.dx, state.bx, state.Dy);
+                            fmpz_sub(state.dx, state.dx, state.form.c);
+                            fmpz_divexact(state.dx, state.dx, state.By);
+                            fmpz_mul(state.form.a, state.by, state.by);
+                            fmpz_mul(state.form.c, state.bx, state.bx);
+                            fmpz_add(state.t, state.bx, state.by);
+                            fmpz_mul(state.t, state.t, state.t);
+                            fmpz_sub(state.form.b, state.form.b, state.t);
+                            fmpz_add(state.form.b, state.form.b, state.form.a);
+                            fmpz_add(state.form.b, state.form.b, state.form.c);
+                            fmpz_mul(state.t, state.G, state.dx);
+                            fmpz_sub(state.form.c, state.form.c, state.t);
+                            return;
+                        }
+
+                        fmpz_xgcd_partial(state.y, state.x, state.by, state.bx, state.L);
+
+                        fmpz_neg(state.x, state.x);
+                        if (fmpz_sgn((state.x)) > 0) {
+                            fmpz_neg(state.y, state.y);
+                        } else {
+                            fmpz_neg(state.by, state.by);
+                        }
+
+                        fmpz_mul(state.ax, state.G, state.x);
+                        fmpz_mul(state.ay, state.G, state.y);
+
+                        fmpz_mul(state.t, state.Dy, state.bx);
+                        fmpz_submul(state.t, state.form.c, state.x);
+                        fmpz_divexact(state.dx, state.t, state.By);
+                        fmpz_mul(state.Q1, state.y, state.dx);
+                        fmpz_add(state.dy, state.Q1, state.Dy);
+                        fmpz_add(state.form.b, state.dy, state.Q1);
+                        fmpz_mul(state.form.b, state.form.b, state.G);
+                        fmpz_divexact(state.dy, state.dy, state.x);
+                        fmpz_mul(state.form.a, state.by, state.by);
+                        fmpz_mul(state.form.c, state.bx, state.bx);
+                        fmpz_add(state.t, state.bx, state.by);
+                        fmpz_submul(state.form.b, state.t, state.t);
+                        fmpz_add(state.form.b, state.form.b, state.form.a);
+                        fmpz_add(state.form.b, state.form.b, state.form.c);
+                        fmpz_submul(state.form.a, state.ay, state.dy);
+                        fmpz_submul(state.form.c, state.ax, state.dx);
+                    }
+
+                    template<typename T>
+                    static inline void discriminant_generator(state_type<T> &state, const T &d) {
+                        T denom;
+                        fmpz_init(denom);
+                        fmpz_set_ui(state.form.a, 2);
+                        fmpz_set_ui(state.form.b, 1);
+                        fmpz_mul(state.form.c, state.form.b, state.form.b);
+                        fmpz_sub(state.form.c, state.form.c, d);
+                        fmpz_mul_ui(denom, state.form.a, 4);
+                        fmpz_fdiv_q(state.form.c, state.form.c, denom);
+                        fast_reduce(state);
+                        fmpz_clear(denom);
+                    }
+
+#elif defined(CRYPTO3_VDF_BOOST)
 
                     /*!
                      * @brief

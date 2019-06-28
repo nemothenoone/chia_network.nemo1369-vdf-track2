@@ -48,6 +48,23 @@ namespace nil {
                     }
                 }
 
+#elif defined(CRYPTO3_VDF_FLINT)
+
+                template<typename T = fmpz_t> using state_type = typename policy_type::state_type<T>;
+
+                template<typename T, typename I>
+                inline static void compute(state_type<T> &state, const T &d, I itr) {
+                    policy_type::discriminant_generator(state, d);
+
+                    fmpz_abs(state.L, d);
+                    fmpz_root(state.L, state.L, 4);
+
+                    for (int i = 0; i < itr; i++) {
+                        policy_type::nudupl(state);
+                        policy_type::fast_reduce(state);
+                    }
+                }
+
 #elif defined(CRYPTO3_VDF_BOOST)
 
                 template<typename T, typename F> using state_type = typename policy_type::state_type<T, F>;

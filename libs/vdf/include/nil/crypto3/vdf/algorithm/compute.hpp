@@ -35,10 +35,14 @@ namespace nil {
 
             }
 
+#ifndef CRYPTO3_VDF_FLINT
+
             template<typename Vdf, typename SinglePassRange, typename Integer, typename OutputRange>
             OutputRange &compute(const SinglePassRange &r, Integer difficulty, OutputRange &out) {
 
             }
+
+#endif
 
 #ifndef CRYPTO3_VDF_BOOST
 

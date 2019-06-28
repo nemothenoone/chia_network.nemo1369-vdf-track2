@@ -98,8 +98,39 @@ namespace nil {
 
 #elif defined(CRYPTO3_VDF_FLINT)
 
-#else
-
+                        state_type() {
+                            fmpz_init(D);
+                            fmpz_init(L);
+                            fmpz_init(r);
+                            fmpz_init(ra);
+                            fmpz_init(s);
+                            fmpz_init(p);
+                            fmpz_init(G);
+                            fmpz_init(dx);
+                            fmpz_init(dy);
+                            fmpz_init(By);
+                            fmpz_init(Dy);
+                            fmpz_init(x);
+                            fmpz_init(y);
+                            fmpz_init(t1);
+                            fmpz_init(t2);
+                            fmpz_init(bx);
+                            fmpz_init(by);
+                            fmpz_init(ax);
+                            fmpz_init(ay);
+                            fmpz_init(q);
+                            fmpz_init(t);
+                            fmpz_init(Q1);
+                            fmpz_init(faa);
+                            fmpz_init(fab);
+                            fmpz_init(fac);
+                            fmpz_init(fba);
+                            fmpz_init(fbb);
+                            fmpz_init(fbc);
+                            fmpz_init(fca);
+                            fmpz_init(fcb);
+                            fmpz_init(fcc);
+                        }
 #endif
 
                         number_type D, L;
