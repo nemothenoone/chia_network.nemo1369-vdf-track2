@@ -52,6 +52,7 @@ if(CRYPTO3_VDF_MPIR OR CRYPTO3_VDF_GMP OR CRYPTO3_VDF_FLINT)
     elseif(CRYPTO3_VDF_GMP)
         cm_find_package(GMPXX REQUIRED)
     elseif(CRYPTO3_VDF_FLINT)
+        cm_find_package(GMP REQUIRED)
         cm_find_package(FLINT REQUIRED)
     endif()
 elseif(CRYPTO3_VDF_BOOST)
@@ -159,10 +160,11 @@ elseif(CRYPTO3_VDF_FLINT)
                                "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
                                ${MPFR_INCLUDE_DIR}
+                               ${GMP_INCLUDE_DIR}
                                ${FLINT_INCLUDE_DIR})
 
     target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE ${FLINT_LIBRARIES}
-                          ${MPFR_LIBRARIES})
+                          ${MPFR_LIBRARIES} ${GMP_LIBRARIES})
 elseif(CRYPTO3_VDF_BOOST)
     target_compile_definitions(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE CRYPTO3_VDF_BOOST)
 

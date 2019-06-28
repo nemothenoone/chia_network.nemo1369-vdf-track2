@@ -767,7 +767,7 @@ namespace nil {
                     template<typename T>
                     static void nudupl(state_type<T> &state) {
 
-                        fmpz_gcdext(state.G, state.y, NULL, state.form.b, state.form.a);
+                        fmpz_xgcd(state.G, state.y, NULL, state.form.b, state.form.a);
 
                         fmpz_divexact(state.By, state.form.a, state.G);
                         fmpz_divexact(state.Dy, state.form.b, state.G);

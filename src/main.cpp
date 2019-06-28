@@ -29,11 +29,15 @@ using namespace nil::crypto3;
 
 int main(int argc, char *argv[]) {
 
-    mpz_t discriminant;
+    typedef typename vdf::chia::state_type<mpz_t> state_type;
+    typedef typename state_type::number_type number_type;
+
+    number_type discriminant;
     mpz_init(discriminant);
     mpz_set_str(discriminant, argv[1], 0);
 
-    vdf::chia::state_type<mpz_t> state;
+    state_type state;
+
     vdf::compute<vdf::chia>(discriminant, std::stoi(argv[2]), state);
 
     std::cout << state.form.a << std::endl << state.form.b;
