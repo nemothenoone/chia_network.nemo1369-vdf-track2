@@ -39,7 +39,7 @@ if((NOT GMP_FOUND) OR (NOT GMPXX_FOUND) OR (NOT FLINT_FOUND) OR (NOT MPFR_FOUND)
         cm_find_package(MPFR REQUIRED)
     endif()
 
-    cm_find_package(MPIRXX REQUIRED)
+    cm_find_package(GMPXX REQUIRED)
     cm_find_package(FLINT REQUIRED)
 endif()
 
@@ -73,9 +73,9 @@ target_include_directories(${CURRENT_PROJECT_NAME} PRIVATE
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
-                           ${MPIRXX_INCLUDE_DIR}
+                           ${GMPXX_INCLUDE_DIR}
                            ${MPFR_INCLUDE_DIR}
                            ${FLINT_INCLUDE_DIR})
 
 target_link_libraries(${CURRENT_PROJECT_NAME} PUBLIC crypto3::vdf
-                      ${MPIRXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
+                      ${GMPXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})

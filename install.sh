@@ -1,7 +1,7 @@
 #!/bin/sh
 sudo apt-get install cmake -y
 sudo apt-get install libgmp3-dev -y
-sudo apt-get install libmpir-dev -y
+sudo apt-get install libmpfr-dev -y
 sudo apt-get install libflint-dev -y
 mkdir build
 cd build
