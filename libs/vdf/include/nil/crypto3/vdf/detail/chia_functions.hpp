@@ -42,13 +42,25 @@ namespace nil {
                      */
                     template<typename T>
                     inline static void normalize(state_type<T> &state) {
-                        mpz_neg(state.r, state.form.a);
-                        if (mpz_cmp(state.form.b, state.r) > 0 && mpz_cmp(state.form.b, state.form.a) <= 0) {
+                        bool bleqa = (mpz_cmp(state.form.b, state.form.a) <= 0);
+                        mpz_neg(state.form.a, state.form.a);
+                        if (mpz_cmp(state.form.b, state.form.a) > 0 && bleqa) {
                             // Already normalized
                             return;
                         }
+                        mpz_neg(state.form.a, state.form.a);
                         mpz_sub(state.r, state.form.a, state.form.b);
                         mpz_mul_2exp(state.ra, state.form.a, 1);
+                        mpz_mul_2exp(state.raa, state.ra, 1);
+
+                        if (mpz_cmp(state.r, state.ra) >= 0 && mpz_cmp(state.r, state.raa) < 0) {
+                            mpz_add(state.form.c, state.form.c, state.form.a);
+                            mpz_add(state.form.c, state.form.c, state.form.b);
+                            mpz_add(state.form.b, state.form.b, state.ra);
+
+                            return;
+                        }
+
                         mpz_fdiv_q(state.r, state.r, state.ra);
                         mpz_mul(state.ra, state.r, state.form.a);
                         mpz_addmul(state.form.c, state.ra, state.r);
@@ -170,7 +182,7 @@ namespace nil {
 
                             if (max_exp - min_exp > exp_threshold) {
                                 normalize(state);
-                                break;
+                                continue;
                             }
                             max_exp++; // for safety vs overflow
 

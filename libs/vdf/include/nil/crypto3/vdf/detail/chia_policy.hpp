@@ -80,7 +80,7 @@ namespace nil {
 
                     constexpr static const int64_t threshold = 1UL << 31;
                     constexpr static const int64_t double_threshold = 1UL << 31;
-                    constexpr static const int64_t exp_threshold = 31;
+                    constexpr static const int64_t exp_threshold = 63;
                     constexpr static const int64_t maxv = ((1UL << 63) - 1);
 
                     template<typename NumberType>
@@ -91,7 +91,7 @@ namespace nil {
 
                         state_type() {
                             mpz_inits(D, L, NULL);
-                            mpz_inits(r, ra, s, p, NULL);
+                            mpz_inits(r, ra, raa, s, p, NULL);
                             mpz_inits(G, dx, dy, By, Dy, x, y, t1, t2, bx, by, ax, ay, q, t, Q1, NULL);
                             mpz_inits(faa, fab, fac, fba, fbb, fbc, fca, fcb, fcc, NULL);
                         }
@@ -134,7 +134,7 @@ namespace nil {
 #endif
 
                         number_type D, L;
-                        number_type r, ra, s, p;
+                        number_type r, ra, raa, s, p;
                         number_type G, dx, dy, By, Dy, x, y, t1, t2, bx, by, ax, ay, q, t, Q1;
 
                         number_type faa, fab, fac, fba, fbb, fbc, fca, fcb, fcc;
