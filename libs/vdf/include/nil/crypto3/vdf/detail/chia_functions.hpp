@@ -50,10 +50,13 @@ namespace nil {
                         }
                         mpz_neg(state.form.a, state.form.a);
                         mpz_sub(state.r, state.form.a, state.form.b);
-                        mpz_mul_2exp(state.ra, state.form.a, 1);
-                        mpz_mul_2exp(state.raa, state.ra, 1);
 
-                        if (mpz_cmp(state.r, state.ra) >= 0 && mpz_cmp(state.r, state.raa) < 0) {
+                        mpz_mul_si(state.ra, state.form.a, -3);
+                        bool falb = (mpz_cmp(state.ra, state.form.b) < 0);
+
+                        mpz_mul_2exp(state.ra, state.form.a, 1);
+
+                        if (mpz_cmp(state.r, state.ra) >= 0 && falb) {
                             mpz_add(state.form.c, state.form.c, state.form.a);
                             mpz_add(state.form.c, state.form.c, state.form.b);
                             mpz_add(state.form.b, state.form.b, state.ra);
