@@ -54,7 +54,7 @@ namespace nil {
                         mpz_mul_si(state.ra, state.form.a, -3);
                         bool falb = (mpz_cmp(state.ra, state.form.b) < 0);
 
-                        mpz_mul_2exp(state.ra, state.form.a, 1);
+                        mpz_add(state.ra, state.form.a, state.form.a);
 
                         if (mpz_cmp(state.r, state.ra) >= 0 && falb) {
                             mpz_add(state.form.c, state.form.c, state.form.a);
@@ -68,7 +68,7 @@ namespace nil {
                         mpz_mul(state.ra, state.r, state.form.a);
                         mpz_addmul(state.form.c, state.ra, state.r);
                         mpz_addmul(state.form.c, state.r, state.form.b);
-                        mpz_mul_2exp(state.ra, state.ra, 1);
+                        mpz_add(state.form.b, state.form.b, state.ra);
                         mpz_add(state.form.b, state.form.b, state.ra);
                     }
 
@@ -100,55 +100,6 @@ namespace nil {
                         }
 
                         return true;
-                    }
-
-                    /*!
-                     * @brief
-                     * @tparam IntegerNumberType
-                     * @param form
-                     */
-                    template<typename T>
-                    inline static void reduce(state_type<T> &state) {
-                        normalize(state);
-                        int cmp;
-                        while (((cmp = mpz_cmp(state.form.a, state.form.c)) > 0) ||
-                               (cmp == 0 && mpz_sgn(state.form.b) < 0)) {
-                            mpz_add(state.s, state.form.c, state.form.b);
-
-                            // x = 2c
-                            mpz_mul_2exp(state.p, state.form.c, 1);
-                            mpz_fdiv_q(state.s, state.s, state.p);
-
-                            mpz_set(state.previous_form.a, state.form.a);
-                            mpz_set(state.previous_form.b, state.form.b);
-
-                            // b = -b
-                            mpz_set(state.form.a, state.form.c);
-                            mpz_neg(state.form.b, state.form.b);
-
-                            // x = 2sc
-                            mpz_mul(state.p, state.s, state.form.c);
-                            mpz_mul_2exp(state.p, state.p, 1);
-
-                            // b += 2sc
-                            mpz_add(state.form.b, state.form.b, state.p);
-
-                            // x = bs
-                            mpz_mul(state.p, state.previous_form.b, state.s);
-
-                            // s = s^2
-                            mpz_mul(state.s, state.s, state.s);
-
-                            // c = cs
-                            mpz_mul(state.form.c, state.form.c, state.s);
-
-                            // c -= cx
-                            mpz_sub(state.form.c, state.form.c, state.p);
-
-                            // c += a
-                            mpz_add(state.form.c, state.form.c, state.previous_form.a);
-                        }
-                        normalize(state);
                     }
 
                     template<typename T>

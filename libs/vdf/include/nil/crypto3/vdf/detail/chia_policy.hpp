@@ -139,7 +139,7 @@ namespace nil {
 
                         number_type faa, fab, fac, fba, fbb, fbc, fca, fcb, fcc;
 
-                        form_type previous_form, form;
+                        form_type form;
                     };
                 };
             }
