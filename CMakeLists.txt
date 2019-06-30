@@ -49,7 +49,12 @@ if((NOT GMP_FOUND) OR (NOT GMPXX_FOUND) OR (NOT FLINT_FOUND) OR (NOT MPFR_FOUND)
     endif()
 endif()
 
-cm_project(chia_vdf_test)
+cm_project(chia_vdf_test LANGUAGES ASM C CXX)
+
+# Workaround for interface ASM sources support for CMake <= 3.7
+if(NOT CMAKE_ASM_COMPILE_OBJECT)
+    enable_language(C CXX ASM)
+endif()
 
 list(APPEND ${CURRENT_PROJECT_NAME}_PUBLIC_HEADERS
      )
