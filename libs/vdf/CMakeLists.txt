@@ -29,7 +29,7 @@ endif()
 
 if(NOT SSE2_FOUND OR NOT SSE3_FOUND OR NOT SSSE3_FOUND OR NOT SSE4_1_FOUND OR NOT SSE4_2_FOUND OR
    HAVE_AVX2_EXTENSIONS OR HAVE_AVX_EXTENSIONS)
-    option(CRYPTO3_VDF_USE_SIMD "Build Crypto3.VDF with SIMD instructions usage." FALSE)
+    option(CRYPTO3_VDF_USE_SIMD "Build Crypto3.VDF with SIMD instructions usage." TRUE)
 endif()
 
 option(CRYPTO3_VDF_BOOST "Build Crypto3.VDF with Boost.Multiprecision backend usage" TRUE)
