@@ -42,6 +42,12 @@
 
 #endif
 
+#ifdef CRYPTO3_VDF_SIMD
+
+#include <nil/crypto3/vdf/detail/vpmadd/avxmul.hpp>
+
+#endif
+
 namespace nil {
     namespace crypto3 {
         namespace vdf {

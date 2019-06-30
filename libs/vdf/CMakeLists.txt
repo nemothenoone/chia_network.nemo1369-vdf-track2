@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0028 NEW)
+cmake_policy(SET CMP0042 NEW)
 
 list(APPEND CMAKE_MODULE_PATH
      "${CMAKE_CURRENT_LIST_DIR}/cmake"
@@ -29,7 +29,7 @@ endif()
 
 if(NOT SSE2_FOUND OR NOT SSE3_FOUND OR NOT SSSE3_FOUND OR NOT SSE4_1_FOUND OR NOT SSE4_2_FOUND OR
    HAVE_AVX2_EXTENSIONS OR HAVE_AVX_EXTENSIONS)
-    option(CRYPTO3_VDF_USE_SIMD "Build Crypto3.VDF with SIMD instructions usage." TRUE)
+    option(CRYPTO3_VDF_USE_SIMD "Build Crypto3.VDF with SIMD instructions usage." FALSE)
 endif()
 
 option(CRYPTO3_VDF_BOOST "Build Crypto3.VDF with Boost.Multiprecision backend usage" TRUE)
@@ -89,12 +89,23 @@ endif()
 
 if(CRYPTO3_VDF_CHIA)
     list(APPEND ${CURRENT_PROJECT_NAME}_CHIA_HEADERS
-         include/nil/crypto3/vdf/chia.hpp
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/chia.hpp>
          )
 
     list(APPEND ${CURRENT_PROJECT_NAME}_PUBLIC_HEADERS
          ${${CURRENT_PROJECT_NAME}_CHIA_HEADERS}
          )
+
+    list(APPEND ${CURRENT_PROJECT_NAME}_UNGROUPED_SOURCES
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/chia.hpp>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/avx512_mul1024.s>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/avx512_mul2048.s>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/avx512_mul3072.s>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/avx512_mul4096.s>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/vpmadd_mul1024.s>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/vpmadd_mul4096.s>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/vpmadd_mul2048.s>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/nil/crypto3/vdf/detail/vpmadd/vpmadd_mul3072.s>)
 endif()
 
 list(APPEND ${CURRENT_PROJECT_NAME}_PUBLIC_HEADERS
@@ -115,11 +126,14 @@ list(APPEND ${CURRENT_PROJECT_NAME}_SOURCES
 cm_setup_version(VERSION 0.1.0 PREFIX ${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME})
 
 add_library(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE)
+target_sources(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE
+               ${${CURRENT_PROJECT_NAME}_HEADERS}
+               ${${CURRENT_PROJECT_NAME}_SOURCES})
 
 if(SSE2_FOUND OR SSE3_FOUND OR SSSE3_FOUND OR SSE4_1_FOUND OR SSE4_2_FOUND)
     target_compile_options(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE "-mpclmul;-mssse3")
     target_compile_definitions(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE
-                               "${CMAKE_UPPER_WORKSPACE_NAME}_HAS_CHIA_VDF_SIMD")
+                               "${CMAKE_UPPER_WORKSPACE_NAME}_VDF_SIMD")
 endif()
 
 target_compile_options(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE "$<$<CONFIG:RELEASE>:-O3;-fno-rtti>")

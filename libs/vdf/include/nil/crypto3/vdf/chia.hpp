@@ -19,8 +19,8 @@
 // limitations under the License.
 //---------------------------------------------------------------------------//
 
-#ifndef CRYPTO3_CHIA_HPP
-#define CRYPTO3_CHIA_HPP
+#ifndef CRYPTO3_VDF_CHIA_HPP
+#define CRYPTO3_VDF_CHIA_HPP
 
 #include <nil/crypto3/vdf/detail/chia_functions.hpp>
 
