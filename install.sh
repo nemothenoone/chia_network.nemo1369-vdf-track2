@@ -10,14 +10,14 @@ sudo apt-get install autoconf -y
 sudo apt-get install libgmp3-dev -y
 sudo apt-get install libmpfr-dev -y
 sudo apt-get install libflint-dev -y
-sudo apt-get autoremove
+sudo apt autoremove -y
 mkdir build
 cd build
 git clone git://github.com/wbhart/mpir.git mpir
 cd mpir
 ./autogen.sh
-./configure
-make
+./configure --enable-cxx
+make all
 make check
 sudo make install
 cd ../
