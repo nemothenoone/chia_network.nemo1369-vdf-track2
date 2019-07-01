@@ -1,7 +1,4 @@
 #!/bin/sh
-sudo apt-get update -y
-sudo apt-get upgrade -y
-sudo apt autoremove -y
 sudo apt-get install cmake git yasm m4 build-essential autogen autoconf libtool -y
 sudo apt-get install libgmp3-dev libmpfr-dev libflint-dev -y
 mkdir build
