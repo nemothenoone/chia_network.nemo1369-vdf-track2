@@ -1,16 +1,9 @@
 #!/bin/sh
 sudo apt-get update -y
 sudo apt-get upgrade -y
-sudo apt-get install cmake -y
-sudo apt-get install git -y
-sudo apt-get install yasm -y
-sudo apt-get install m4 -y
-sudo apt-get install build-essential -y
-sudo apt-get install autoconf -y
-sudo apt-get install libgmp3-dev -y
-sudo apt-get install libmpfr-dev -y
-sudo apt-get install libflint-dev -y
 sudo apt autoremove -y
+sudo apt-get install cmake git yasm m4 build-essential autogen autoconf libtool -y
+sudo apt-get install libgmp3-dev libmpfr-dev libflint-dev -y
 mkdir build
 cd build
 git clone git://github.com/wbhart/mpir.git mpir
