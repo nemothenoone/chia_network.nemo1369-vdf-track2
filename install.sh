@@ -12,6 +12,7 @@ cd build
 #cd ../
 #sudo apt-get install libgmp3-dev -y
 
+sudo apt-get purge libgmp3-dev
 wget http://mpir.org/mpir-3.0.0.tar.bz2
 tar xvfj mpir-3.0.0.tar.bz2
 cd mpir-3.0.0
