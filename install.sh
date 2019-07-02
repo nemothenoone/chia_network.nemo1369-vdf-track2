@@ -19,7 +19,7 @@ sudo make -j$(nproc) uninstall
 #./autogen.sh
 #./configure --enable-cxx
 make -j$(nproc) all
-make -j$(nproc) check
+#make -j$(nproc) check
 #sudo make -j$(nproc) uninstall
 sudo make -j$(nproc) install
 cd ../
