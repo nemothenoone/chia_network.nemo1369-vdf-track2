@@ -1,9 +1,9 @@
 #!/bin/sh
-sudo apt-get install build-essential -y
-sudo apt-get install yasm -y
-sudo apt-get install autoconf autotools-dev libtool texinfo -y
-sudo apt-get install cmake git m4 autogen automake -y
-sudo apt-get install libmpfr-dev libflint-dev libgmp3-dev -y
+sudo apt-get -qq install build-essential -y
+sudo apt-get -qq install yasm -y
+sudo apt-get -qq install autoconf autotools-dev libtool texinfo -y
+sudo apt-get -qq install cmake git m4 autogen automake -y
+sudo apt-get -qq install libmpfr-dev libflint-dev libgmp3-dev -y
 mkdir build
 cd build
 
@@ -23,8 +23,10 @@ cd mpir
 #tar xvfj mpir-3.0.0.tar.bz2
 #cd mpir-3.0.0
 ./autogen.sh &> log
-./autogen.sh &> log
-./configure --enable-cxx
+./configure --quiet --enable-cxx
+cd tune
+make -j$(nproc) tuneup
+./tuneup
 make -j$(nproc) all
 #make -j$(nproc) check
 #cd tune
