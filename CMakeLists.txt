@@ -41,6 +41,7 @@ if((NOT GMP_FOUND) OR (NOT GMPXX_FOUND) OR (NOT FLINT_FOUND) OR (NOT MPFR_FOUND)
     endif()
 
     if(CRYPTO3_VDF_MPIR)
+        set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR}/build/release)
         cm_find_package(MPIRXX REQUIRED)
     elseif(CRYPTO3_VDF_GMP)
         cm_find_package(GMP REQUIRED)
