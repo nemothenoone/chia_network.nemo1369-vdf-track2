@@ -2,7 +2,7 @@
 sudo apt-get install build-essential -y
 sudo apt-get install yasm -y
 sudo apt-get install autoconf autotools-dev libtool texinfo -y
-sudo apt-get install cmake git yasm m4 autogen automake -y
+sudo apt-get install cmake git m4 autogen automake -y
 sudo apt-get install libmpfr-dev libflint-dev libgmp3-dev -y
 mkdir build
 cd build
@@ -23,6 +23,9 @@ cd mpir
 ./configure --enable-cxx
 make -j$(nproc) all
 make -j$(nproc) check
+cd tune
+make -j$(nproc) tune
+cd ../
 sudo make -j$(nproc) uninstall
 sudo make -j$(nproc) install
 cd ../
