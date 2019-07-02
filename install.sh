@@ -20,7 +20,9 @@ cd mpir
 #tar xvfj mpir-3.0.0.tar.bz2
 #cd mpir-3.0.0
 ./autogen.sh
-./configure
+./configure --enable-cxx
+./autogen.sh
+./configure --enable-cxx
 make -j$(nproc) all
 make -j$(nproc) check
 #cd tune
