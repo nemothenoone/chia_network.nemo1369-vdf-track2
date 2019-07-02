@@ -92,4 +92,6 @@ target_include_directories(${CURRENT_PROJECT_NAME} PRIVATE
                            ${FLINT_INCLUDE_DIR})
 
 target_link_libraries(${CURRENT_PROJECT_NAME} PUBLIC crypto3::vdf
-                      ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${MPIRXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
+                      ${GMP_LIBRARIES} ${GMPXX_LIBRARIES}
+                      ${MPIR_LIBRARIES} ${MPIRXX_LIBRARIES}
+                      ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
