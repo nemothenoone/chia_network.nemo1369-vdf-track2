@@ -1,11 +1,21 @@
 #!/bin/sh
 sudo apt-get install cmake git yasm m4 build-essential autogen automake autoconf libtool -y
-sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
-sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
-sudo apt-get install libgmp3-dev libmpfr-dev libflint-dev -y
+sudo apt-get install libmpfr-dev libflint-dev -y
 mkdir build
 cd build
+
+wget http://mpir.org/mpir-3.0.0.tar.bz2
+tar xvfj mpir-3.0.0.tar.bz2
+cd mpir-3.0.0
+./configure --enable-cxx
+make -j$(nproc) all
+make -j$(nproc) check
+sudo make -j$(nproc) install
+
+#sudo apt-get install libgmp3-dev -y
+
 mkdir release
 cd release
-cmake -DBUILD_SHARED_LIBS=FALSE -DBUILD_UNIT_TESTS=FALSE -DCRYPTO3_VDF_BOOST=FALSE -DCRYPTO3_VDF_GMP=TRUE -DCMAKE_BUILD_TYPE=Release ../../
+cmake -DBUILD_SHARED_LIBS=FALSE -DBUILD_UNIT_TESTS=FALSE -DCRYPTO3_VDF_BOOST=FALSE -DCRYPTO3_VDF_MPIR=TRUE
+-DCMAKE_BUILD_TYPE=Release ../../
 make chia_vdf_test
