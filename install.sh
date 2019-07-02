@@ -1,5 +1,6 @@
 #!/bin/sh
 sudo apt-get install cmake git yasm m4 build-essential autogen automake autoconf libtool -y
+sudo apt-get purge libgmp3-dev libmpfr-dev libflint-dev -y
 sudo apt-get install libgmp3-dev libmpfr-dev libflint-dev -y
 mkdir build
 cd build
