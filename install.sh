@@ -1,6 +1,5 @@
 #!/bin/sh
 sudo apt-get install cmake git yasm m4 build-essential autogen automake autoconf libtool autotools-dev texinfo -y
-sudo apt-get install libmpfr-dev -y
 #sudo apt-get install libmpfr-dev libflint-dev -y
 mkdir build
 cd build
