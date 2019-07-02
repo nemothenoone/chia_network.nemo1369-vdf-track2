@@ -87,8 +87,9 @@ target_include_directories(${CURRENT_PROJECT_NAME} PRIVATE
                            "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
                            ${GMPXX_INCLUDE_DIR}
+                           ${MPIRXX_INCLUDE_DIR}
                            ${MPFR_INCLUDE_DIR}
                            ${FLINT_INCLUDE_DIR})
 
 target_link_libraries(${CURRENT_PROJECT_NAME} PUBLIC crypto3::vdf
-                      ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
+                      ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${MPIRXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
