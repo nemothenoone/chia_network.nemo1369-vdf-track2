@@ -23,9 +23,9 @@ cd mpir
 ./configure
 make -j$(nproc) all
 make -j$(nproc) check
-cd tune
-make -j$(nproc) tune
-cd ../
+#cd tune
+#make -j$(nproc) tune
+#cd ../
 sudo make -j$(nproc) uninstall
 sudo make -j$(nproc) install
 cd ../
