@@ -40,6 +40,13 @@ int main(int argc, char *argv[]) {
 
     vdf::compute<vdf::chia>(discriminant, std::stoi(argv[2]), state);
 
+#ifdef CRYPTO3_VDF_MPIR
+    mpz_out_str(stdout, 10, f.a);
+    fputc('\n',stdout);
+    mpz_out_str(stdout, 10, f.b);
+    fflush(stdout);
+#else
     std::cout << state.form.a << std::endl << state.form.b;
     std::cout << std::flush;
+#endif
 }
