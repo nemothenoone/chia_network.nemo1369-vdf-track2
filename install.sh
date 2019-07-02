@@ -25,11 +25,8 @@ cd mpir
 ./autogen.sh > /dev/null 2>&1
 ./autogen.sh
 ./configure --quiet --enable-cxx
-cd tune
-make -j$(nproc) tuneup
-./tuneup
 cd ../
-make -j$(nproc) all
+make -j$(nproc) all > /dev/null 2>&1
 #make -j$(nproc) check
 sudo make -j$(nproc) uninstall
 sudo make -j$(nproc) install
