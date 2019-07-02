@@ -29,7 +29,8 @@ cm_find_package(CM)
 
 add_subdirectory(libs/vdf)
 
-if((NOT GMP_FOUND) OR (NOT GMPXX_FOUND) OR (NOT FLINT_FOUND) OR (NOT MPFR_FOUND))
+if((NOT GMP_FOUND) OR (NOT GMPXX_FOUND) OR (NOT FLINT_FOUND) OR (NOT MPFR_FOUND) OR (NOT MPIR_FOUND) OR (NOT
+    MPIRXX_FOUND))
     if(NOT BUILD_SHARED_LIBS)
         if(UNIX OR APPLE)
             set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ${CMAKE_FIND_LIBRARY_SUFFIXES})
@@ -89,5 +90,4 @@ target_include_directories(${CURRENT_PROJECT_NAME} PRIVATE
                            ${FLINT_INCLUDE_DIR})
 
 target_link_libraries(${CURRENT_PROJECT_NAME} PUBLIC crypto3::vdf
-                      ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${MPIR_LIBRARIES} ${MPIRXX_LIBRARIES} ${FLINT_LIBRARIES}
-                      ${MPFR_LIBRARIES})
+                      ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${FLINT_LIBRARIES} ${MPFR_LIBRARIES})
