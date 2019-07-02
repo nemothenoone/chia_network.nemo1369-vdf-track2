@@ -25,7 +25,7 @@ cd mpir
 ./autogen.sh > /dev/null 2>&1
 ./autogen.sh
 ./configure --enable-cxx
-make -j$(nproc) > /dev/null 2>&1
+make -j$(nproc)
 #make -j$(nproc) check
 sudo make -j$(nproc) uninstall
 sudo make -j$(nproc) install
