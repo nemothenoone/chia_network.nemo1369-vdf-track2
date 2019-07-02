@@ -14,6 +14,9 @@ cd build
 #sudo make -j$(nproc) uninstall
 #cd ../
 
+#sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
+#sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
+
 git clone git://github.com/wbhart/mpir.git
 cd mpir
 #wget http://mpir.org/mpir-3.0.0.tar.bz2
@@ -24,7 +27,7 @@ cd mpir
 ./autogen.sh
 ./configure --enable-cxx
 make -j$(nproc) all
-make -j$(nproc) check
+#make -j$(nproc) check
 #cd tune
 #make -j$(nproc) tune
 #cd ../
