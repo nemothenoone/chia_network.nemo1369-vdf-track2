@@ -159,7 +159,7 @@ if(CRYPTO3_VDF_GMP)
                                ${MPFR_INCLUDE_DIR})
 
     target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE
-                          ${GMPXX_LIBRARIES} ${MPFR_LIBRARIES})
+                          ${GMP_LIBRARIES} ${GMPXX_LIBRARIES} ${MPFR_LIBRARIES})
 
 elseif(CRYPTO3_VDF_MPIR)
     target_compile_definitions(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} INTERFACE CRYPTO3_VDF_MPIR)
