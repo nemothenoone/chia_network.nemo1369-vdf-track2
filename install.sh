@@ -4,15 +4,23 @@ sudo apt-get install libmpfr-dev libflint-dev -y
 mkdir build
 cd build
 
+#wget http://mpir.org/mpir-3.0.0.tar.bz2
+#tar xvfj mpir-3.0.0.tar.bz2
+#cd mpir-3.0.0
+#./configure --enable-cxx
+#sudo make -j$(nproc) uninstall
+#cd ../
+#sudo apt-get install libgmp3-dev -y
+
 wget http://mpir.org/mpir-3.0.0.tar.bz2
 tar xvfj mpir-3.0.0.tar.bz2
 cd mpir-3.0.0
 ./configure --enable-cxx
 make -j$(nproc) all
 make -j$(nproc) check
+sudo make -j$(nproc) uninstall
 sudo make -j$(nproc) install
-
-#sudo apt-get install libgmp3-dev -y
+cd ../
 
 mkdir release
 cd release
