@@ -1,6 +1,6 @@
 #!/bin/sh
 sudo apt-get install cmake git yasm m4 build-essential autogen automake autoconf libtool autotools-dev texinfo -y
-#sudo apt-get install libmpfr-dev libflint-dev -y
+sudo apt-get install libmpfr-dev libflint-dev libgmp3-dev -y
 mkdir build
 cd build
 
@@ -10,9 +10,7 @@ cd build
 #./configure --enable-cxx
 #sudo make -j$(nproc) uninstall
 #cd ../
-#sudo apt-get install libgmp3-dev -y
 
-sudo apt-get purge libgmp3-dev libmpfr-dev libflint-dev -y
 #git clone git://github.com/wbhart/mpir.git
 #cd mpir
 wget http://mpir.org/mpir-3.0.0.tar.bz2
