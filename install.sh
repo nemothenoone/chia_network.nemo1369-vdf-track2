@@ -16,7 +16,6 @@ cd mpir
 #wget http://mpir.org/mpir-3.0.0.tar.bz2
 #tar xvfj mpir-3.0.0.tar.bz2
 #cd mpir-3.0.0
-cd mpir
 ./autogen.sh
 ./configure --enable-cxx
 make -j$(nproc) all
