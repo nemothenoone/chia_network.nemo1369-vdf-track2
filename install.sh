@@ -17,7 +17,7 @@ cd build
 #sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
 #sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
 
-git clone git://github.com/wbhart/mpir.git
+git clone git://github.com/wbhart/mpir.git > /dev/null 2>&1
 cd mpir
 #wget http://mpir.org/mpir-3.0.0.tar.bz2
 #tar xvfj mpir-3.0.0.tar.bz2
