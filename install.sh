@@ -4,8 +4,8 @@ sudo apt-get -qq install yasm -y
 sudo apt-get -qq install autoconf autotools-dev libtool texinfo -y
 sudo apt-get -qq install cmake git m4 autogen automake -y
 
-sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
-sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
+#sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
+#sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
 
 sudo apt-get -qq install libmpfr-dev libflint-dev libgmp3-dev -y
 mkdir build
@@ -18,19 +18,19 @@ cd build
 #sudo make -j$(nproc) uninstall
 #cd ../
 
-#git clone git://github.com/wbhart/mpir.git > /dev/null 2>&1
-#cd mpir
+git clone git://github.com/wbhart/mpir.git > /dev/null 2>&1
+cd mpir
 #wget http://mpir.org/mpir-3.0.0.tar.bz2
 #tar xvfj mpir-3.0.0.tar.bz2
 #cd mpir-3.0.0
-#./autogen.sh > /dev/null 2>&1
-#./autogen.sh > /dev/null 2>&1
-#./configure --enable-cxx --build=skylake-pc-linux-gnu > /dev/null 2>&1
-#make -j$(nproc) > /dev/null 2>&1
-#make -j$(nproc) check
-#sudo make -j$(nproc) uninstall > /dev/null 2>&1
-#sudo make -j$(nproc) install > /dev/null 2>&1
-#cd ../
+./autogen.sh > /dev/null 2>&1
+./autogen.sh > /dev/null 2>&1
+./configure --enable-cxx --build=broadwell-pc-linux-gnu > /dev/null 2>&1
+make -j$(nproc) > /dev/null 2>&1
+make -j$(nproc) check
+sudo make -j$(nproc) uninstall > /dev/null 2>&1
+sudo make -j$(nproc) install > /dev/null 2>&1
+cd ../
 
 mkdir release
 cd release
