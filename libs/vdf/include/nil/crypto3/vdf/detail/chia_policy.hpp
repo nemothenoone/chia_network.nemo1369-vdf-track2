@@ -27,12 +27,10 @@
 #include <flint/fmpz.h>
 
 #elif defined(CRYPTO3_VDF_GMP)
-#define GCDEXT_DC_THRESHOLD 2
 
 #include <gmpxx.h>
 
 #elif defined(CRYPTO3_VDF_MPIR)
-#define GCDEXT_DC_THRESHOLD 2
 
 #include <mpirxx.h>
 
