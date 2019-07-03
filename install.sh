@@ -3,6 +3,10 @@ sudo apt-get -qq install build-essential -y
 sudo apt-get -qq install yasm -y
 sudo apt-get -qq install autoconf autotools-dev libtool texinfo -y
 sudo apt-get -qq install cmake git m4 autogen automake -y
+
+sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
+sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
+
 sudo apt-get -qq install libmpfr-dev libflint-dev libgmp3-dev -y
 mkdir build
 cd build
@@ -13,9 +17,6 @@ cd build
 #./configure
 #sudo make -j$(nproc) uninstall
 #cd ../
-
-#sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
-#sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
 
 #git clone git://github.com/wbhart/mpir.git > /dev/null 2>&1
 #cd mpir
