@@ -25,7 +25,7 @@ cd mpir
 #cd mpir-3.0.0
 ./autogen.sh > /dev/null 2>&1
 ./autogen.sh > /dev/null 2>&1
-./configure --enable-cxx --build=skylake-unknown-linux-gnu > /dev/null 2>&1
+./configure --enable-cxx --build=broadwell-unknown-linux-gnu > /dev/null 2>&1
 ./config.guess
 make -j$(nproc) > /dev/null 2>&1
 make -j$(nproc) check > /dev/null 2>&1

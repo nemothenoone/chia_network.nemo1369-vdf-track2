@@ -18,4 +18,4 @@ Normalization steps are optimized for handling particular values of already norm
 
 ### Hardware Optimizations
 
-This particular implementation uses the custom-built libmpir with possible SIMD-instructions usage.
+This particular implementation uses the custom-built libmpir with possible SSE4.2-instructions usage.
