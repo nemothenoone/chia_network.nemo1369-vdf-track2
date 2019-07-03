@@ -18,4 +18,5 @@ Normalization steps are optimized for handling particular values of already norm
 
 ### Hardware Optimizations
 
-This particular implementation uses the custom-built libmpir with possible SSE4.2-instructions usage.
+This particular implementation uses the custom-crafted libmpir fork (https://github.com/nemo1369/mpir.git)
+ with extensive vectorization instructions usage.
