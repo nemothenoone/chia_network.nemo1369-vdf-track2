@@ -16,4 +16,6 @@ them to fully reduced ones. Such approximation algorithm usage in combination wi
 
 Normalization steps are optimized for handling particular values of already normalized form with no redundant copying.
 
-### SIMD Optimizations
+### Hardware Optimizations
+
+This particular implementation uses the custom-built libmpir with possible SIMD-instructions usage.
