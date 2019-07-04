@@ -19,4 +19,4 @@ Normalization steps are optimized for handling particular values of already norm
 ### Hardware Optimizations
 
 This particular implementation uses the custom-crafted libmpir fork (https://github.com/nemo1369/mpir.git) with 
-extended Skylake specialization and extensive vectorization instructions usage.
+extended Skylake architecture support and extensive vector-processing instructions usage.
