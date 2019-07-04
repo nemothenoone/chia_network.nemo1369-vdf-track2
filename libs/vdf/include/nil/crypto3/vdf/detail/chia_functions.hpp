@@ -378,8 +378,17 @@ namespace nil {
 
                         mpz_gcdext(state.G, state.y, NULL, state.form.b, state.form.a);
 
+#if defined(CRYPTO3_VDF_GMP)
+
+                        mpz_divexact(state.By, state.form.a, state.G);
+                        mpz_divexact(state.Dy, state.form.b, state.G);
+
+#elif defined(CRYPTO3_VDF_MPIR)
+
                         mpz_divexact_gcd(state.By, state.form.a, state.G);
                         mpz_divexact_gcd(state.Dy, state.form.b, state.G);
+
+#endif
 
                         mpz_mul(state.bx, state.y, state.form.c);
                         mpz_mod(state.bx, state.bx, state.By);
