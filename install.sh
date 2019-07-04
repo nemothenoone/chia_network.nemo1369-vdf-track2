@@ -1,13 +1,13 @@
 #!/bin/sh
-sudo apt-get -qq install build-essential -y
-sudo apt-get -qq install yasm -y
-sudo apt-get -qq install autoconf autotools-dev libtool texinfo -y
-sudo apt-get -qq install cmake git m4 autogen automake -y
+sudo apt-get install build-essential -y > /dev/null 2>&1
+sudo apt-get install yasm -y > /dev/null 2>&1
+sudo apt-get install autoconf autotools-dev libtool texinfo -y > /dev/null 2>&1
+sudo apt-get install cmake git m4 autogen automake -y > /dev/null 2>&1
 
 #sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmpxx.a
 #sudo rm -rf /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libgmp.a
 
-sudo apt-get -qq install libmpfr-dev libflint-dev libgmp3-dev -y
+sudo apt-get install libmpfr-dev libflint-dev libgmp3-dev -y > /dev/null 2>&1
 mkdir build
 cd build
 
@@ -28,13 +28,13 @@ cd mpir
 ./autogen.sh > /dev/null 2>&1
 ./configure --enable-cxx --build=skylake-pc-linux-gnu > /dev/null 2>&1
 ./config.guess
-make -j$(nproc) > /dev/null 2>&1
-make -j$(nproc) check #> /dev/null 2>&1
+make -j$(nproc) #> /dev/null 2>&1
+make -j$(nproc) check > /dev/null 2>&1
 sudo make -j$(nproc) uninstall > /dev/null 2>&1
 sudo make -j$(nproc) install > /dev/null 2>&1
 cd ../
 
 mkdir release
 cd release
-cmake -DBUILD_SHARED_LIBS=FALSE -DBUILD_UNIT_TESTS=FALSE -DCRYPTO3_VDF_BOOST=FALSE -DCRYPTO3_VDF_MPIR=TRUE -DCMAKE_BUILD_TYPE=Release ../../
+cmake -DBUILD_SHARED_LIBS=FALSE -DBUILD_UNIT_TESTS=FALSE -DCRYPTO3_VDF_BOOST=FALSE -DCRYPTO3_VDF_MPIR=TRUE -DCMAKE_BUILD_TYPE=Release ../../ > /dev/null 2>&1
 make chia_vdf_test
