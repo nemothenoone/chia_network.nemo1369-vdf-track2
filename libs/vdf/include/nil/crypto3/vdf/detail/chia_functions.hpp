@@ -378,8 +378,8 @@ namespace nil {
 
                         mpz_gcdext(state.G, state.y, NULL, state.form.b, state.form.a);
 
-                        mpz_divexact(state.By, state.form.a, state.G);
-                        mpz_divexact(state.Dy, state.form.b, state.G);
+                        mpz_divexact_gcd(state.By, state.form.a, state.G);
+                        mpz_divexact_gcd(state.Dy, state.form.b, state.G);
 
                         mpz_mul(state.bx, state.y, state.form.c);
                         mpz_mod(state.bx, state.bx, state.By);
